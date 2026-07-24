@@ -1,4 +1,12 @@
-# HUB de Links da Agência Arc — Escopo
+# HUB de Links da Agência F3F — Escopo
+
+## Status atual
+
+- [x] Escopo definido (baseado no site de referência)
+- [x] Logo e paleta extraídos do Canva (`assets/f3f_mark.png`, `assets/f3f_wordmark.png`) e aplicados em `index.html`
+- [x] Estrutura pública (cabeçalho, busca, seções, rodapé, painel admin) implementada e no ar via Vercel
+- [ ] Links/seções reais — `SECOES` está vazio em `index.html`, aguardando conteúdo
+- [ ] Supabase — `SB_URL` / `SB_KEY` / `SB_TABELA` no topo do `<script>` de `index.html` ainda em branco; painel admin fica bloqueado até isso ser preenchido
 
 ## Objetivo
 
@@ -41,7 +49,7 @@ Central de links interna da agência: uma página única, protegida por senha, r
 - Dados: Supabase (Postgres), uma tabela única guardando `MARCA` (config de textos/marca) e `SECOES` (array de seções, cada uma com seus links)
 - Design: tema escuro com dourado de destaque, variáveis CSS (`--sh-*`), fontes serif+sans configuráveis
 
-## Proposta para a Agência Arc
+## Proposta para a Agência F3F
 
 Replicar o mesmo modelo — já validado, simples, sem servidor próprio pra manter:
 
@@ -59,14 +67,13 @@ Replicar o mesmo modelo — já validado, simples, sem servidor próprio pra man
 
 ## O que falta pra fechar (usuário manda depois)
 
-- Paleta de cores e fontes da marca Arc
+- ~~Paleta de cores e fontes~~ — resolvido via Canva (`assets/`)
+- ~~Onde hospedar~~ — resolvido, Vercel conectado ao repo
 - Lista real de seções e links — quais projetos/ferramentas entram e como agrupar
-- Onde vai hospedar (WordPress existente da Arc? página nova?)
-- Nome/rótulo do hub e texto de rodapé
 - Confirmar se reaproveita o projeto Supabase já usado no site de referência (mesma agência, ver observação acima) ou se cria um novo do zero
 
 ## Próximos passos
 
-1. Usuário confirma ou ajusta este escopo
-2. Usuário manda cores, projetos/links reais e decisão de hospedagem
-3. Implementação: clonar o motor, trocar config (Supabase + marca + cores), popular seções, testar as duas senhas
+1. Usuário manda projetos/links reais
+2. Decidir Supabase: reaproveitar o projeto do site de referência ou criar um novo
+3. Preencher `SB_URL` / `SB_KEY` / `SB_TABELA` em `index.html`, popular `SECOES`, testar as duas senhas

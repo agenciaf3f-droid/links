@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agência F3F — Central de Links</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --f3f-bg: #08060c;
+    --f3f-bg-elevated: #120e1a;
+    --f3f-line: rgba(255,255,255,.08);
+    --f3f-line-strong: rgba(255,255,255,.18);
+    --f3f-ink: #f5f3f7;
+    --f3f-ink-dim: #b8b0c4;
+    --f3f-ink-mute: #79738a;
+    --f3f-violet-1: #6c00f7;
+    --f3f-violet-2: #8600b5;
+    --f3f-accent: #7a00d6;
+    --f3f-gradient: linear-gradient(135deg, var(--f3f-violet-1), var(--f3f-violet-2));
+    --f3f-radius: 16px;
+    --f3f-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--f3f-bg);
+    background-image:
+      radial-gradient(60% 50% at 15% 0%, rgba(108,0,247,.20), transparent 60%),
+      radial-gradient(50% 40% at 100% 10%, rgba(134,0,181,.16), transparent 60%);
+    color: var(--f3f-ink);
+    font-family: var(--f3f-sans);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  #f3f-hub{ max-width: 720px; margin: 0 auto; padding: 64px 20px 40px; }
+
+  /* ---------------- cabeçalho ---------------- */
+  .f3f-header{ text-align:center; margin-bottom: 36px; }
+  .f3f-mark{ height: 44px; width:auto; margin-bottom: 20px; }
+  .f3f-kicker{
+    font-size: 12px; font-weight: 700; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--f3f-ink-mute); margin: 0 0 10px;
+  }
+  .f3f-nome{ font-size: 34px; font-weight: 800; margin: 0 0 12px; letter-spacing: -.01em; }
+  .f3f-nome .destaque{
+    background: var(--f3f-gradient);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .f3f-descricao{ font-size: 15px; color: var(--f3f-ink-dim); max-width: 480px; margin: 0 auto; line-height: 1.5; }
+
+  /* ---------------- busca ---------------- */
+  .f3f-busca{ margin-bottom: 28px; }
+  .f3f-busca input{
+    width:100%; padding: 13px 16px; border-radius: 999px;
+    border: 1px solid var(--f3f-line); background: var(--f3f-bg-elevated);
+    color: var(--f3f-ink); font-size: 14px; outline: none;
+  }
+  .f3f-busca input:focus{ border-color: var(--f3f-accent); }
+  .f3f-busca input::placeholder{ color: var(--f3f-ink-mute); }
+
+  /* ---------------- seções e links ---------------- */
+  .f3f-secao{ margin-bottom: 28px; }
+  .f3f-secao-titulo{
+    font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--f3f-ink-mute); margin: 0 0 12px; padding-left: 4px;
+  }
+  .f3f-link{
+    display:flex; align-items:center; gap: 14px;
+    padding: 14px 16px; margin-bottom: 10px;
+    background: var(--f3f-bg-elevated); border: 1px solid var(--f3f-line);
+    border-radius: var(--f3f-radius); text-decoration:none; color: var(--f3f-ink);
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .f3f-link:hover{ border-color: var(--f3f-line-strong); transform: translateY(-1px); }
+  .f3f-link.destaque{ border-image: var(--f3f-gradient) 1; border-width: 1.5px; }
+  .f3f-link-info{ flex:1; min-width:0; }
+  .f3f-link-titulo{ font-size: 15px; font-weight: 600; margin:0; }
+  .f3f-link-desc{ font-size: 13px; color: var(--f3f-ink-dim); margin: 2px 0 0; }
+  .f3f-badge{
+    font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 999px; background: var(--f3f-gradient); color: #fff; flex-shrink:0;
+  }
+  .f3f-vazio{
+    text-align:center; color: var(--f3f-ink-mute); font-size: 14px;
+    padding: 32px 16px; border: 1px dashed var(--f3f-line); border-radius: var(--f3f-radius);
+  }
+
+  /* ---------------- rodapé ---------------- */
+  .f3f-footer{
+    margin-top: 40px; display:flex; align-items:center; justify-content: space-between;
+    font-size: 12px; color: var(--f3f-ink-mute);
+  }
+  .f3f-footer button{
+    background: none; border: 1px solid var(--f3f-line); color: var(--f3f-ink-dim);
+    padding: 7px 14px; border-radius: 999px; font-size: 12px; cursor:pointer;
+  }
+  .f3f-footer button:hover{ border-color: var(--f3f-line-strong); color: var(--f3f-ink); }
+
+  /* ---------------- painel admin ---------------- */
+  .f3f-overlay{
+    position: fixed; inset: 0; background: rgba(4,3,7,.72); backdrop-filter: blur(4px);
+    display:none; align-items:center; justify-content:center; padding: 20px; z-index: 50;
+  }
+  .f3f-overlay.aberto{ display:flex; }
+  .f3f-painel{
+    width: 100%; max-width: 440px; max-height: 82vh; overflow:auto;
+    background: var(--f3f-bg-elevated); border: 1px solid var(--f3f-line-strong);
+    border-radius: 20px; padding: 28px;
+  }
+  .f3f-painel h3{ margin: 0 0 6px; font-size: 18px; }
+  .f3f-painel p.hint{ margin: 0 0 20px; font-size: 13px; color: var(--f3f-ink-dim); }
+  .f3f-campo{ margin-bottom: 14px; }
+  .f3f-campo label{ display:block; font-size: 12px; color: var(--f3f-ink-dim); margin-bottom: 6px; }
+  .f3f-campo input, .f3f-campo textarea{
+    width:100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--f3f-line);
+    background: var(--f3f-bg); color: var(--f3f-ink); font-size: 14px; font-family: inherit; outline:none;
+  }
+  .f3f-campo input:focus, .f3f-campo textarea:focus{ border-color: var(--f3f-accent); }
+  .f3f-btn{
+    width:100%; padding: 12px; border-radius: 10px; border: none; cursor:pointer;
+    background: var(--f3f-gradient); color:#fff; font-weight: 700; font-size: 14px;
+  }
+  .f3f-btn:disabled{ opacity:.5; cursor:not-allowed; }
+  .f3f-erro{ font-size: 13px; color: #ff6b81; margin: 10px 0 0; }
+  .f3f-fechar{
+    position:absolute; top:18px; right:18px; background:none; border:none;
+    color: var(--f3f-ink-mute); font-size: 20px; cursor:pointer; line-height:1;
+  }
+</style>
+</head>
+<body>
+
+<div id="f3f-hub">
+  <header class="f3f-header">
+    <img class="f3f-mark" src="assets/f3f_mark.png" alt="Agência F3F">
+    <p class="f3f-kicker" id="f3f-kicker"></p>
+    <h1 class="f3f-nome" id="f3f-nome"></h1>
+    <p class="f3f-descricao" id="f3f-descricao"></p>
+  </header>
+
+  <div class="f3f-busca">
+    <input type="text" id="f3f-busca-input" placeholder="Buscar link...">
+  </div>
+
+  <main id="f3f-conteudo"></main>
+
+  <footer class="f3f-footer">
+    <span id="f3f-rodape"></span>
+    <button id="f3f-btn-painel" type="button">Painel</button>
+  </footer>
+</div>
+
+<!-- painel admin -->
+<div class="f3f-overlay" id="f3f-overlay">
+  <div class="f3f-painel" style="position:relative;">
+    <button class="f3f-fechar" id="f3f-fechar" type="button" aria-label="Fechar">×</button>
+    <div id="f3f-painel-conteudo">
+      <h3>Acesso restrito</h3>
+      <p class="hint">Digite a senha para gerenciar os links.</p>
+      <div class="f3f-campo">
+        <label for="f3f-senha">Senha</label>
+        <input type="password" id="f3f-senha">
+      </div>
+      <button class="f3f-btn" id="f3f-btn-entrar" type="button">Entrar</button>
+      <p class="f3f-erro" id="f3f-erro" style="display:none;"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================================
+   ██  CONFIGURAÇÃO DA CONEXÃO  ██
+   Preencher com o projeto Supabase real antes de usar o painel admin.
+   Sem isso preenchido, a página funciona só como visualização (com o
+   conteúdo de RESERVA abaixo) — o painel avisa que falta configurar.
+   ========================================================================== */
+const SB_URL = '';     // ex: 'https://xxxx.supabase.co'
+const SB_KEY = '';     // anon public key
+const SB_TABELA = '';  // ex: 'f3f_hub'
+
+/* ==========================================================================
+   ██  CONTEÚDO DE RESERVA  ██
+   Mostrado se o Supabase não estiver configurado ou estiver fora do ar.
+   SEÇÕES fica vazio até os links reais chegarem.
+   ========================================================================== */
+const RESERVA = {
+  MARCA: {
+    kicker: 'CENTRAL DE LINKS',
+    nome: 'Agência',
+    nomeDestaque: 'F3F',
+    descricao: 'Todos os acessos, materiais e canais oficiais dos projetos reunidos em um só lugar.',
+    rodape: 'Agência F3F'
+  },
+  SECOES: []
+};
+
+/* ==========================================================================
+   ██  MOTOR  ██
+   ========================================================================== */
+let MARCA = {}, SECOES = [];
+let senhaAtual = null;
+let editRef = null;
+let pendente = false;
+
+function aplicarReserva(){
+  MARCA = { ...RESERVA.MARCA };
+  SECOES = RESERVA.SECOES.map(s => ({ ...s }));
+}
+
+async function carregarDoBanco(){
+  if(!SB_URL || !SB_KEY || !SB_TABELA){
+    aplicarReserva();
+    renderHeader();
+    renderPublic();
+    return;
+  }
+  try{
+    const r = await fetch(`${SB_URL}/rest/v1/${SB_TABELA}?select=*`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
+    });
+    if(!r.ok) throw new Error('fetch falhou: ' + r.status);
+    const linhas = await r.json();
+    const linha = linhas[0];
+    MARCA = linha?.marca || RESERVA.MARCA;
+    SECOES = linha?.secoes || RESERVA.SECOES;
+  }catch(e){
+    console.warn('Supabase indisponível, usando conteúdo de reserva.', e);
+    aplicarReserva();
+  }
+  renderHeader();
+  renderPublic();
+}
+
+function renderHeader(){
+  document.getElementById('f3f-kicker').textContent = MARCA.kicker || '';
+  document.getElementById('f3f-nome').innerHTML =
+    `${escapeHtml(MARCA.nome || '')} <span class="destaque">${escapeHtml(MARCA.nomeDestaque || '')}</span>`;
+  document.getElementById('f3f-descricao').textContent = MARCA.descricao || '';
+  document.getElementById('f3f-rodape').textContent = MARCA.rodape || '';
+}
+
+function renderPublic(termo=''){
+  const alvo = termo.trim().toLowerCase();
+  const conteudo = document.getElementById('f3f-conteudo');
+  conteudo.innerHTML = '';
+
+  if(SECOES.length === 0){
+    conteudo.innerHTML = `<div class="f3f-vazio">Nenhum link cadastrado ainda. Abra o painel para adicionar.</div>`;
+    return;
+  }
+
+  let algumaSecaoVisivel = false;
+
+  SECOES.forEach(secao => {
+    const links = (secao.links || []).filter(l => {
+      if(!alvo) return true;
+      return (l.titulo || '').toLowerCase().includes(alvo) ||
+             (l.descricao || '').toLowerCase().includes(alvo);
+    });
+    if(links.length === 0) return;
+    algumaSecaoVisivel = true;
+
+    const bloco = document.createElement('div');
+    bloco.className = 'f3f-secao';
+    bloco.innerHTML = `<p class="f3f-secao-titulo">${escapeHtml(secao.nome || '')}</p>`;
+
+    links
+      .slice()
+      .sort((a,b) => (b.destaque?1:0) - (a.destaque?1:0))
+      .forEach(l => {
+        const a = document.createElement('a');
+        a.className = 'f3f-link' + (l.destaque ? ' destaque' : '');
+        a.href = l.url || '#';
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.innerHTML = `
+          <div class="f3f-link-info">
+            <p class="f3f-link-titulo">${escapeHtml(l.titulo || '')}</p>
+            ${l.descricao ? `<p class="f3f-link-desc">${escapeHtml(l.descricao)}</p>` : ''}
+          </div>
+          ${l.destaque ? '<span class="f3f-badge">Destaque</span>' : ''}
+        `;
+        bloco.appendChild(a);
+      });
+
+    conteudo.appendChild(bloco);
+  });
+
+  if(!algumaSecaoVisivel){
+    conteudo.innerHTML = `<div class="f3f-vazio">Nenhum link encontrado para essa busca.</div>`;
+  }
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[c]));
+}
+
+/* ---------------- busca ---------------- */
+document.getElementById('f3f-busca-input').addEventListener('input', e => {
+  renderPublic(e.target.value);
+});
+
+/* ---------------- admin: abrir/fechar/login ---------------- */
+const overlay = document.getElementById('f3f-overlay');
+
+document.getElementById('f3f-btn-painel').addEventListener('click', () => {
+  overlay.classList.add('aberto');
+});
+document.getElementById('f3f-fechar').addEventListener('click', () => {
+  overlay.classList.remove('aberto');
+});
+overlay.addEventListener('click', e => {
+  if(e.target === overlay) overlay.classList.remove('aberto');
+});
+
+document.getElementById('f3f-btn-entrar').addEventListener('click', async () => {
+  const senha = document.getElementById('f3f-senha').value;
+  const erro = document.getElementById('f3f-erro');
+  erro.style.display = 'none';
+
+  if(!SB_URL || !SB_KEY || !SB_TABELA){
+    erro.textContent = 'Supabase ainda não configurado — preencha SB_URL / SB_KEY / SB_TABELA no topo do arquivo.';
+    erro.style.display = 'block';
+    return;
+  }
+
+  const ok = await verificarSenha(senha);
+  if(!ok){
+    erro.textContent = 'Senha incorreta.';
+    erro.style.display = 'block';
+    return;
+  }
+  senhaAtual = senha;
+  // TODO: renderizar abas Adicionar / Gerenciar / Geral aqui uma vez que o
+  // Supabase estiver configurado e a senha validada.
+});
+
+async function verificarSenha(senha){
+  try{
+    const r = await fetch(`${SB_URL}/rest/v1/rpc/verificar_senha_admin`, {
+      method: 'POST',
+      headers: {
+        apikey: SB_KEY,
+        Authorization: `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ senha })
+    });
+    if(!r.ok) return false;
+    const data = await r.json();
+    return data === true;
+  }catch(e){
+    console.warn('Falha ao verificar senha.', e);
+    return false;
+  }
+}
+
+/* ---------------- backup (funciona sem Supabase) ---------------- */
+function baixarBackup(){
+  const dados = JSON.stringify({ MARCA, SECOES }, null, 2);
+  const blob = new Blob([dados], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'f3f-hub-backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+carregarDoBanco();
+</script>
+</body>
+</html>
