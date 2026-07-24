@@ -33,7 +33,7 @@
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
   }
-  #f3f-hub{ max-width: 720px; margin: 0 auto; padding: 64px 20px 40px; }
+  #f3f-hub{ max-width: 720px; margin: 0 auto; padding: 64px 20px 40px; display:none; }
 
   /* ---------------- cabeçalho ---------------- */
   .f3f-header{ text-align:center; margin-bottom: 36px; }
@@ -131,6 +131,20 @@
 </head>
 <body>
 
+<!-- gate de acesso: precisa entrar antes de ver a área de links -->
+<div class="f3f-overlay aberto" id="f3f-gate-overlay">
+  <div class="f3f-painel">
+    <h3>Agência F3F — Central de Links</h3>
+    <p class="hint">Digite a senha para acessar a área de links.</p>
+    <div class="f3f-campo">
+      <label for="f3f-gate-senha">Senha</label>
+      <input type="password" id="f3f-gate-senha">
+    </div>
+    <button class="f3f-btn" id="f3f-gate-entrar" type="button">Entrar</button>
+    <p class="f3f-erro" id="f3f-gate-erro" style="display:none;"></p>
+  </div>
+</div>
+
 <div id="f3f-hub">
   <header class="f3f-header">
     <img class="f3f-mark" src="assets/f3f_mark.png" alt="Agência F3F">
@@ -194,6 +208,16 @@ const RESERVA = {
   },
   SECOES: []
 };
+
+/* ==========================================================================
+   ██  GATE DE ACESSO  ██
+   Senha simples pra manter gente de fora fora. Não é proteção forte
+   (fica no código-fonte, dá pra ver com F12) — mesmo nível de segurança
+   da senha nativa do WordPress no site de referência.
+   TODO: troque F3F_TROCAR_SENHA pela senha real antes de divulgar o link.
+   ========================================================================== */
+const SENHA_VISUALIZACAO = 'F3F_TROCAR_SENHA';
+const CHAVE_ACESSO_LOCAL = 'f3f_hub_acesso_ok';
 
 /* ==========================================================================
    ██  MOTOR  ██
@@ -298,6 +322,36 @@ function escapeHtml(str){
   }[c]));
 }
 
+/* ---------------- gate de acesso ---------------- */
+function liberarAcesso(salvarLocal){
+  document.getElementById('f3f-gate-overlay').classList.remove('aberto');
+  document.getElementById('f3f-hub').style.display = '';
+  if(salvarLocal) localStorage.setItem(CHAVE_ACESSO_LOCAL, 'ok');
+  carregarDoBanco();
+}
+
+function verificarAcessoSalvo(){
+  if(localStorage.getItem(CHAVE_ACESSO_LOCAL) === 'ok'){
+    liberarAcesso(false);
+  }
+}
+
+document.getElementById('f3f-gate-entrar').addEventListener('click', () => {
+  const senha = document.getElementById('f3f-gate-senha').value;
+  const erro = document.getElementById('f3f-gate-erro');
+  if(senha === SENHA_VISUALIZACAO){
+    erro.style.display = 'none';
+    liberarAcesso(true);
+  }else{
+    erro.textContent = 'Senha incorreta.';
+    erro.style.display = 'block';
+  }
+});
+
+document.getElementById('f3f-gate-senha').addEventListener('keydown', e => {
+  if(e.key === 'Enter') document.getElementById('f3f-gate-entrar').click();
+});
+
 /* ---------------- busca ---------------- */
 document.getElementById('f3f-busca-input').addEventListener('input', e => {
   renderPublic(e.target.value);
@@ -370,7 +424,7 @@ function baixarBackup(){
   URL.revokeObjectURL(url);
 }
 
-carregarDoBanco();
+verificarAcessoSalvo();
 </script>
 </body>
 </html>
