@@ -127,6 +127,11 @@
     position:absolute; top:18px; right:18px; background:none; border:none;
     color: var(--f3f-ink-mute); font-size: 20px; cursor:pointer; line-height:1;
   }
+  .f3f-textarea{
+    min-height: 260px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px; line-height: 1.5; resize: vertical; white-space: pre;
+  }
+  .f3f-ok{ font-size: 13px; color: #7bdcb5; margin: 10px 0 0; }
 </style>
 </head>
 <body>
@@ -189,9 +194,9 @@
    Sem isso preenchido, a página funciona só como visualização (com o
    conteúdo de RESERVA abaixo) — o painel avisa que falta configurar.
    ========================================================================== */
-const SB_URL = '';     // ex: 'https://xxxx.supabase.co'
-const SB_KEY = '';     // anon public key
-const SB_TABELA = '';  // ex: 'f3f_hub'
+const SB_URL = 'https://ulikfkemdawinetjyhok.supabase.co';
+const SB_KEY = 'sb_publishable_JQj-0ihUaa8RswNn9uxZ6w_0bg3i6N7';
+const SB_TABELA = 'f3f_hub';
 
 /* ==========================================================================
    ██  CONTEÚDO DE RESERVA  ██
@@ -208,7 +213,8 @@ const RESERVA = {
   },
   SECOES: [
     {
-      nome: 'Ferramentas Internas',
+      titulo: 'Ferramentas Internas',
+      legenda: '',
       links: [
         { titulo: 'Console', descricao: '', url: 'https://console.agenciaf3f.com.br/', destaque: false },
         { titulo: 'Dashboard', descricao: '', url: 'https://dashboard.agenciaf3f.com.br/', destaque: false },
@@ -250,14 +256,14 @@ async function carregarDoBanco(){
     return;
   }
   try{
-    const r = await fetch(`${SB_URL}/rest/v1/${SB_TABELA}?select=*`, {
+    const r = await fetch(`${SB_URL}/rest/v1/${SB_TABELA}?id=eq.principal&select=dados`, {
       headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
     });
     if(!r.ok) throw new Error('fetch falhou: ' + r.status);
     const linhas = await r.json();
-    const linha = linhas[0];
-    MARCA = linha?.marca || RESERVA.MARCA;
-    SECOES = linha?.secoes || RESERVA.SECOES;
+    const dados = linhas[0]?.dados;
+    MARCA = dados?.MARCA || RESERVA.MARCA;
+    SECOES = dados?.SECOES || RESERVA.SECOES;
   }catch(e){
     console.warn('Supabase indisponível, usando conteúdo de reserva.', e);
     aplicarReserva();
@@ -297,7 +303,7 @@ function renderPublic(termo=''){
 
     const bloco = document.createElement('div');
     bloco.className = 'f3f-secao';
-    bloco.innerHTML = `<p class="f3f-secao-titulo">${escapeHtml(secao.nome || '')}</p>`;
+    bloco.innerHTML = `<p class="f3f-secao-titulo">${escapeHtml(secao.titulo || '')}</p>`;
 
     links
       .slice()
@@ -391,35 +397,83 @@ document.getElementById('f3f-btn-entrar').addEventListener('click', async () => 
     return;
   }
 
-  const ok = await verificarSenha(senha);
-  if(!ok){
-    erro.textContent = 'Senha incorreta.';
+  const resultado = await chamarRPC(senha, null);
+  if(!resultado.ok){
+    erro.textContent = resultado.mensagem || 'Senha incorreta.';
     erro.style.display = 'block';
     return;
   }
   senhaAtual = senha;
-  // TODO: renderizar abas Adicionar / Gerenciar / Geral aqui uma vez que o
-  // Supabase estiver configurado e a senha validada.
+  renderEditorAdmin();
 });
 
-async function verificarSenha(senha){
+/* chama a função f3f_hub_salvar: p_dados=null só valida a senha, com
+   p_dados salva de verdade. Espelha o padrão já usado em sinergia_hub. */
+async function chamarRPC(senha, dados){
   try{
-    const r = await fetch(`${SB_URL}/rest/v1/rpc/verificar_senha_admin`, {
+    const r = await fetch(`${SB_URL}/rest/v1/rpc/${SB_TABELA}_salvar`, {
       method: 'POST',
       headers: {
         apikey: SB_KEY,
         Authorization: `Bearer ${SB_KEY}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ senha })
+      body: JSON.stringify({ p_senha: senha, p_dados: dados })
     });
-    if(!r.ok) return false;
-    const data = await r.json();
-    return data === true;
+    if(!r.ok){
+      const corpo = await r.json().catch(() => ({}));
+      return { ok: false, mensagem: corpo.message };
+    }
+    return { ok: true, valor: await r.json().catch(() => null) };
   }catch(e){
-    console.warn('Falha ao verificar senha.', e);
-    return false;
+    console.warn('Falha ao chamar RPC.', e);
+    return { ok: false, mensagem: 'Falha de conexão com o Supabase.' };
   }
+}
+
+/* editor mínimo pós-login: edita o JSON bruto de MARCA+SECOES e salva.
+   Sem formulário dedicado ainda — funcional, não bonito. */
+function renderEditorAdmin(){
+  const painel = document.getElementById('f3f-painel-conteudo');
+  painel.innerHTML = `
+    <h3>Editar links</h3>
+    <p class="hint">Edita o JSON abaixo (MARCA + SECOES) e salva no banco.</p>
+    <div class="f3f-campo">
+      <textarea class="f3f-textarea" id="f3f-editor-json">${escapeHtml(JSON.stringify({ MARCA, SECOES }, null, 2))}</textarea>
+    </div>
+    <button class="f3f-btn" id="f3f-editor-salvar" type="button">Salvar no banco</button>
+    <p class="f3f-erro" id="f3f-editor-erro" style="display:none;"></p>
+    <p class="f3f-ok" id="f3f-editor-ok" style="display:none;"></p>
+  `;
+  document.getElementById('f3f-editor-salvar').addEventListener('click', async () => {
+    const erro = document.getElementById('f3f-editor-erro');
+    const ok = document.getElementById('f3f-editor-ok');
+    erro.style.display = 'none';
+    ok.style.display = 'none';
+
+    let novoDados;
+    try{
+      novoDados = JSON.parse(document.getElementById('f3f-editor-json').value);
+    }catch(e){
+      erro.textContent = 'JSON inválido: ' + e.message;
+      erro.style.display = 'block';
+      return;
+    }
+
+    const resultado = await chamarRPC(senhaAtual, novoDados);
+    if(!resultado.ok){
+      erro.textContent = resultado.mensagem || 'Falha ao salvar.';
+      erro.style.display = 'block';
+      return;
+    }
+    MARCA = novoDados.MARCA || MARCA;
+    SECOES = novoDados.SECOES || SECOES;
+    renderHeader();
+    renderPublic();
+    pendente = false;
+    ok.textContent = 'Salvo.';
+    ok.style.display = 'block';
+  });
 }
 
 /* ---------------- backup (funciona sem Supabase) ---------------- */
