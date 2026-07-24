@@ -341,7 +341,7 @@ function escapeHtml(str){
 /* ---------------- gate de acesso ---------------- */
 function liberarAcesso(salvarLocal){
   document.getElementById('f3f-gate-overlay').classList.remove('aberto');
-  document.getElementById('f3f-hub').style.display = '';
+  document.getElementById('f3f-hub').style.display = 'block';
   if(salvarLocal) localStorage.setItem(CHAVE_ACESSO_LOCAL, 'ok');
   carregarDoBanco();
 }
