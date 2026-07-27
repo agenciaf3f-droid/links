@@ -243,14 +243,21 @@ const RESERVA = {
     rodape: 'Agência F3F'
   },
   SECOES: [
+    { titulo: 'Financeiro', legenda: '', links: [] },
     {
-      titulo: 'Ferramentas Internas',
+      titulo: 'Ferramentas',
       legenda: '',
       links: [
         { titulo: 'Auto-Ads', descricao: '', url: 'https://console.agenciaf3f.com.br/', destaque: false },
-        { titulo: 'Dash Clientes', descricao: '', url: 'https://dashboard.agenciaf3f.com.br/', destaque: false },
-        { titulo: 'Dash Gestores', descricao: '', url: 'https://controle.agenciaf3f.com.br/dashboard.html', destaque: false },
         { titulo: 'Task', descricao: '', url: 'https://f3f-task-system.vercel.app/login?from=%2Fdashboard', destaque: false }
+      ]
+    },
+    {
+      titulo: 'KPI & Gestão',
+      legenda: '',
+      links: [
+        { titulo: 'Dash Clientes', descricao: '', url: 'https://dashboard.agenciaf3f.com.br/', destaque: false },
+        { titulo: 'Dash Gestores', descricao: '', url: 'https://controle.agenciaf3f.com.br/dashboard.html', destaque: false }
       ]
     }
   ]
@@ -335,14 +342,17 @@ function renderPublic(termo=''){
   let indice = 0;
 
   SECOES.forEach(secao => {
-    indice++;
-    const links = (secao.links || []).filter(l => {
-      if(!alvo) return true;
-      return (l.titulo || '').toLowerCase().includes(alvo) ||
-             (l.descricao || '').toLowerCase().includes(alvo);
-    });
-    if(links.length === 0) return;
+    const todosLinks = secao.links || [];
+    const links = alvo
+      ? todosLinks.filter(l =>
+          (l.titulo || '').toLowerCase().includes(alvo) ||
+          (l.descricao || '').toLowerCase().includes(alvo))
+      : todosLinks;
+
+    // durante busca, some com seções sem nenhum link batendo
+    if(alvo && links.length === 0) return;
     algumaSecaoVisivel = true;
+    indice++;
 
     const bloco = document.createElement('div');
     bloco.className = 'f3f-section';
@@ -354,8 +364,15 @@ function renderPublic(termo=''){
           ${secao.legenda ? `<div class="f3f-sec-legend">${escapeHtml(secao.legenda)}</div>` : ''}
         </div>
       </div>
-      <div class="f3f-grid"></div>
     `;
+
+    if(links.length === 0){
+      bloco.innerHTML += `<div class="f3f-empty" style="padding:24px 0;">Nenhum link ainda nessa área.</div>`;
+      conteudo.appendChild(bloco);
+      return;
+    }
+
+    bloco.innerHTML += `<div class="f3f-grid"></div>`;
     const grid = bloco.querySelector('.f3f-grid');
 
     links
